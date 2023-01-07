@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Similar Directors
+{% endblock %}
+
+{% block content %}
+    {% if recs %}
+    <br>
+    <div class="card-columns d-flex flex-wrap">
+        {% for rec in recs %}
+        <div class="card mx-auto" style="width: 16rem;">
+            <img class="card-img-top" src="{{rec['picture']}}" alt="DIRECTOR PICTURE NOT FOUND">
+            <div class="card-body">
+                <h5 class="card-title"><a href="{{rec['link']}}" rel="noopener noreferrer" target="_blank">{{rec['name']}}</a></h5>
+                <p class="card-text">
+                    Similarity Score: {{rec['score']}}
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <br>
+    {% elif data %}
+    <br>
+    <div class="card-columns d-flex flex-wrap">
+        {% for director in data %}
+        <div class="card mx-auto" style="width: 16rem;">
+            <img class="card-img-top" src="{{director['picture']}}" alt="DIRECTOR PICTURE NOT FOUND">
+            <div class="card-body">
+                <h5 class="card-title">{{director['name']}}</h5>
+                <p class="card-text">
+                    {% for movie in director['movies'] %}
+                        <li>{{ movie['title'] }}</li>
+                    {% endfor %}
+                </p>
+                <form method="POST">
+                    <input type="hidden" id="info_name" name="info_name" value="{{director['name']}}-{{loop.index}}"/>
+                    <input type="hidden" id="info_directorID" name="info_directorID" value="{{director['id']}}"/>
+                    <input type="hidden" id="info_movies{{loop.index}}" name="info_movies{{loop.index}}" value=""/>
+                    <button id="director_button{{loop.index}}" onclick="pickDirectorButton({{director['movies']}}, {{loop.index}})" class="btn btn-lg btn-block btn-primary director_buttons">This director!</button>
+                    <button id="loading_button{{loop.index}}" class="btn btn-lg btn-block btn-primary" type="button" disabled style="display: none;">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Finding similar directors...
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <br>
+    {% else %}
+    <br>
+    <div class="container rounded bg-white" style="border:5px solid black">
+        <form method="POST">
+            <br>
+            <h3 align="center" class="text-black"><span>Find Your New Favorite Director!</span></h3>
+            <br>
+            <div class="form-group">
+                <label for="director_name" class="text-black"><span>Director's Name</span></label>
+                <input type="text" class="form-control" id="director_name" name="director_name" placeholder="Enter a director's name." />
+            </div>
+            <button id="submit_button" onclick="submitButton()" type="submit" class="btn btn-primary">Search</button>
+            <button id="loading_button" class="btn btn-primary" type="button" disabled style="display: none;">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                Searching...
+            </button>
+        </form>
+        <br>
+    </div>
+    {% endif %}
+{% endblock %}
