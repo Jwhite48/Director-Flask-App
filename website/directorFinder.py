@@ -52,7 +52,7 @@ def similarDirectors(movies, directorName):
     directorRecs = []
 
     for id in movies:
-        #Check if equestObj is 404 or not
+        #Check if requestObj is 404 or not
         reccQuery = 'https://api.themoviedb.org/3/movie/' + str(id) + '/recommendations?api_key=' + tmdb_key + '&language=en-US&page=1'
         requestObj = requests.get(reccQuery)
         json_data = json.loads(requestObj.text)

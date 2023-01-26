@@ -1,0 +1,29 @@
+<script>
+    var seconds = 6;
+    var url="/";
+
+    function redirect(){
+        if(seconds <= 0){
+            window.location = url;
+        }else{
+            seconds--;
+            document.getElementById("pageInfo").innerHTML = "Redirecting to Home Page after "+seconds+" seconds."
+            setTimeout("redirect()", 1000)
+        }
+    }
+</script>
+
+{% extends 'base.html' %}
+
+{% block title %}
+Page Not Found
+{% endblock title %}
+
+{% block content %}
+<br><br><br><br><br><br><br><br><br><br><br>
+<div class="container rounded bg-white w-50" style="border:5px solid black">
+    <h1 class="text-center">Page Does Not Exist</h1>
+    <body onload="redirect()">
+    <p class="text-center" id="pageInfo"></p>
+</div>
+{% endblock %}

@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
-import json
+from flask import Blueprint, render_template, request, flash
 from .models import Director
 from . import db
+import json
+from datetime import datetime, timedelta
 
 views = Blueprint('views', __name__)
 
@@ -20,9 +21,20 @@ def home():
                     flash('NO SIMILAR DIRECTORS FOUND!', category='error')
                 else:
                     entry.count += 1
-                    db.session.commit()
-                    flash(f"Similar directors have been found {entry.count} times for {name}!", category='success')
-                    return render_template('home.html', recs=json.loads(entry.ret_value))
+                    if(abs(datetime.now() - entry.date) > timedelta(days=30)):
+                        movies = (request.form.get(f"info_movies{id}")).split(',')
+                        from .directorFinder import similarDirectors
+                        recs = similarDirectors(movies, name)
+                        if(recs): entry.ret_value = json.dumps(recs)
+                        entry.date = datetime.now()
+                        db.session.commit()
+                        flash(f"30 DAY LIMIT REACHED: Updated director reccomendations. \
+                                Similar directors have been found {entry.count} times for {name}!", category='success')
+                        return render_template('home.html', recs=json.loads(entry.ret_value))
+                    else:
+                        db.session.commit()
+                        flash(f"Similar directors have been found {entry.count} times for {name}!", category='success')
+                        return render_template('home.html', recs=json.loads(entry.ret_value))
             else:
                 movies = (request.form.get(f"info_movies{id}")).split(',')
                 from .directorFinder import similarDirectors
